@@ -45,3 +45,7 @@ next-env.d.ts
 .venv/
 devserver.log
 .claude/settings.local.json
+
+# cloudflare/opennext build output
+.open-next/
+.wrangler/
