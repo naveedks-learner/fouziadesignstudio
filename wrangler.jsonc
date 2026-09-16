@@ -7,5 +7,10 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
+  },
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://kanvlaxfvekdmlycwmkv.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_n1rnKAEXP2OvbVEX4U0vrg_bqIUbAgX",
+    "NEXT_PUBLIC_WHATSAPP_NUMBER": "919620335582"
   }
 }
