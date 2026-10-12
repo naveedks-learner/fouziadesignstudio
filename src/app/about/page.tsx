@@ -1,14 +1,22 @@
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <p className="text-sm uppercase tracking-[0.2em] text-accent">
-        About Us
-      </p>
-      <h1 className="mt-2 font-serif text-4xl text-stone-900">
-        The Story of Fouzia Design Studio
-      </h1>
+    <div>
+      <section
+        className="relative flex min-h-[60vh] items-end bg-stone-900 bg-cover bg-center"
+        style={{ backgroundImage: "url(/about-wall.jpg)" }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/40 to-stone-900/10" />
+        <div className="relative mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
+          <p className="text-sm uppercase tracking-[0.2em] text-accent-soft">
+            About Us
+          </p>
+          <h1 className="mt-2 font-serif text-4xl text-white">
+            The Story of Fouzia Design Studio
+          </h1>
+        </div>
+      </section>
 
-      <div className="mt-8 space-y-6 text-stone-700">
+      <div className="mx-auto max-w-3xl space-y-6 px-4 py-12 text-stone-700 sm:px-6">
         <p>
           Fouzia Design Studio was born from a simple belief: that every
           fabric holds a story waiting to be told. At its heart is{" "}
