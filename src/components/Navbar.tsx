@@ -12,6 +12,8 @@ export default function Navbar() {
 
   const links = [
     { href: "/shop", label: "Shop" },
+    { href: "/appointments", label: "Appointments" },
+    { href: "/about", label: "About Us" },
     { href: "/wishlist", label: "Wishlist" },
     { href: "/cart", label: `Cart${count > 0 ? ` (${count})` : ""}` },
   ];
