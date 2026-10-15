@@ -36,6 +36,8 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !profile?.is_admin)) {
@@ -108,6 +110,56 @@ export default function AdminPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const imageList = () =>
+    form.images
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+  const handleImageUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const supabase = createClient();
+      const uploadedUrls: string[] = [];
+
+      for (const file of Array.from(files)) {
+        const ext = file.name.split(".").pop();
+        const path = `products/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage
+          .from("FouziaDesignStudio")
+          .upload(path, file);
+        if (uploadErr) throw uploadErr;
+
+        const { data } = supabase.storage
+          .from("FouziaDesignStudio")
+          .getPublicUrl(path);
+        uploadedUrls.push(data.publicUrl);
+      }
+
+      setForm((f) => ({
+        ...f,
+        images: [...imageList(), ...uploadedUrls].join("\n"),
+      }));
+    } catch (e) {
+      setUploadError(
+        e instanceof Error ? e.message : "Failed to upload image(s)."
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (url: string) => {
+    setForm((f) => ({
+      ...f,
+      images: imageList()
+        .filter((u) => u !== url)
+        .join("\n"),
+    }));
   };
 
   const deleteProduct = async (id: string) => {
@@ -207,8 +259,52 @@ export default function AdminPage() {
               onChange={(e) => setForm({ ...form, sizes: e.target.value })}
               className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm"
             />
+            <div className="space-y-2">
+              <label className="block text-sm text-stone-700">
+                Upload images from your computer
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={(e) => {
+                  handleImageUpload(e.target.files);
+                  e.target.value = "";
+                }}
+                className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm"
+              />
+              {uploading && (
+                <p className="text-xs text-stone-500">Uploading...</p>
+              )}
+              {uploadError && (
+                <p className="text-xs text-red-600">{uploadError}</p>
+              )}
+              {imageList().length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {imageList().map((url) => (
+                    <div key={url} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt=""
+                        className="h-16 w-16 rounded border border-stone-200 object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-stone-900 text-xs text-white"
+                        aria-label="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <textarea
-              placeholder={"Image URLs, one per line\n(real photos go to Supabase Storage; paste the public URLs here)"}
+              placeholder={"Image URLs, one per line\n(or paste external URLs here directly)"}
               value={form.images}
               onChange={(e) => setForm({ ...form, images: e.target.value })}
               rows={3}
